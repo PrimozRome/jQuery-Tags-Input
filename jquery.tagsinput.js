@@ -1,3 +1,4 @@
+/* JQUERY TAG INPUT */
 /*
 
 	jQuery Tags Input Plugin 1.3.3
@@ -77,6 +78,18 @@
 			options = jQuery.extend({focus:false,callback:true},options);
 			this.each(function() { 
 				var id = $(this).attr('id');
+				if(options.validation) {
+					var match = value.match(options.validation);
+				    if (match&&match[7].length==11){
+				        value = match[7];
+				    }else{
+						if (options.callback && tags_callbacks[id] && tags_callbacks[id]['onAddError']) {
+							var f = tags_callbacks[id]['onAddError'];
+							f.call(this, value);
+							return;
+						}
+				    }
+				}
 
 				var tagslist = $(this).val().split(delimiter[id]);
 				if (tagslist[0] == '') { 
@@ -187,7 +200,8 @@
       placeholderColor:'#666666',
       autosize: true,
       comfortZone: 20,
-      inputPadding: 6*2
+      inputPadding: 6*2,
+      validateInput: null
     },options);
 
 		this.each(function() { 
@@ -207,11 +221,12 @@
 	
 			delimiter[id] = data.delimiter;
 			
-			if (settings.onAddTag || settings.onRemoveTag || settings.onChange) {
+			if (settings.onAddTag || settings.onRemoveTag || settings.onChange || settings.onAddError) {
 				tags_callbacks[id] = new Array();
 				tags_callbacks[id]['onAddTag'] = settings.onAddTag;
 				tags_callbacks[id]['onRemoveTag'] = settings.onRemoveTag;
 				tags_callbacks[id]['onChange'] = settings.onChange;
+				tags_callbacks[id]['onAddError'] = settings.onAddError;
 			}
 	
 			var markup = '<div id="'+id+'_tagsinput" class="tagsinput"><div id="'+id+'_addTag">';
@@ -256,13 +271,13 @@
 						$(data.fake_input).autocomplete(settings.autocomplete_url, settings.autocomplete);
 						$(data.fake_input).bind('result',data,function(event,data,formatted) {
 							if (data) {
-								$('#'+id).addTag(data[0] + "",{focus:true,unique:(settings.unique)});
+								$('#'+id).addTag(data[0] + "",{focus:true,unique:(settings.unique),validation:(settings.validateInput)});
 							}
 					  	});
 					} else if (jQuery.ui.autocomplete !== undefined) {
 						$(data.fake_input).autocomplete(autocomplete_options);
 						$(data.fake_input).bind('autocompleteselect',data,function(event,ui) {
-							$(event.data.real_input).addTag(ui.item.value,{focus:true,unique:(settings.unique)});
+							$(event.data.real_input).addTag(ui.item.value,{focus:true,unique:(settings.unique),validation:(settings.validateInput)});
 							return false;
 						});
 					}
@@ -275,7 +290,7 @@
 							var d = $(this).attr('data-default');
 							if ($(event.data.fake_input).val()!='' && $(event.data.fake_input).val()!=d) { 
 								if( (event.data.minChars <= $(event.data.fake_input).val().length) && (!event.data.maxChars || (event.data.maxChars >= $(event.data.fake_input).val().length)) )
-									$(event.data.real_input).addTag($(event.data.fake_input).val(),{focus:true,unique:(settings.unique)});
+									$(event.data.real_input).addTag($(event.data.fake_input).val(),{focus:true,unique:(settings.unique),validation:(settings.validateInput)});
 							} else {
 								$(event.data.fake_input).val($(event.data.fake_input).attr('data-default'));
 								$(event.data.fake_input).css('color',settings.placeholderColor);
@@ -289,7 +304,7 @@
 					if (event.which==event.data.delimiter.charCodeAt(0) || event.which==13 ) {
 					    event.preventDefault();
 						if( (event.data.minChars <= $(event.data.fake_input).val().length) && (!event.data.maxChars || (event.data.maxChars >= $(event.data.fake_input).val().length)) )
-							$(event.data.real_input).addTag($(event.data.fake_input).val(),{focus:true,unique:(settings.unique)});
+							$(event.data.real_input).addTag($(event.data.fake_input).val(),{focus:true,unique:(settings.unique),validation:(settings.validateInput)});
 					  	$(event.data.fake_input).resetAutosize(settings);
 						return false;
 					} else if (event.data.autosize) {
