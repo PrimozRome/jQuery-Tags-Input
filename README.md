@@ -103,7 +103,8 @@ option to false.
 
 Added support for input validation by defining 'validateInput' settings. 
 You can set any regular expression and the input will get matched to 
-that regular expression. Example:
+that regular expression. If the validation fails the onAddError callback will
+get called. Example:
 
     /* Validates if input tag is valid email */
     $('#form_videos').tagsInput({
