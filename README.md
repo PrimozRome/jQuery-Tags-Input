@@ -99,7 +99,7 @@ option to false.
 	   'placeholderColor' : '#666666'
 	});
 
-## NEW
+## New - input validation
 
 Added support for input validation by defining 'validateInput' settings. 
 You can set any regular expression and the input will get matched to 
