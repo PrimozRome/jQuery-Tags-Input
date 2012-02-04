@@ -98,3 +98,20 @@ option to false.
 	   'maxChars' : 0 //if not provided there is no limit,
 	   'placeholderColor' : '#666666'
 	});
+
+## NEW
+
+Added support for input validation by defining 'validateInput' settings. 
+You can set any regular expression and the input will get matched to 
+that regular expression. Example:
+
+    /* Validates if input tag is valid email */
+    $('#form_videos').tagsInput({
+    	'width':'330px', 
+    	'height':'100px', 
+    	'defaultText':'dodaj video',
+    	'validateInput':/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    	'onAddError': function(data) {
+    		alert('Input is not a valit email address');
+    	}
+    });
